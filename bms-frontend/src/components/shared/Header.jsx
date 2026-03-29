@@ -2,6 +2,7 @@ import React from 'react'
 import mainLogo from '../../assets/main-icon.png'
 import { FaSearch } from "react-icons/fa";
 import { useLocation } from '../../context/LocationContext.jsx';
+import { Link } from "react-router-dom";
 
 import map from '../../assets/pin.gif'
 const Header = () => {
@@ -53,7 +54,9 @@ const Header = () => {
 
                     {/* Left Section */}
                     <div className="flex items-center space-x-6 font-medium">
-                        <span className="cursor-pointer hover:text-red-500">Movies</span>
+                        <Link to="/movies" className="cursor-pointer hover:text-red-500">
+                            Movies
+                        </Link>
                         <span className="cursor-pointer hover:text-red-500">Stream</span>
                         <span className="cursor-pointer hover:text-red-500">Events</span>
                         <span className="cursor-pointer hover:text-red-500">Plays</span>

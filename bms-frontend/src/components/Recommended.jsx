@@ -1,7 +1,9 @@
 import React from "react";
 import { movies } from "../utils/constants";
+import { useNavigate } from "react-router-dom";
 
 const Recommended = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full py-6 bg-white">
       <div className="max-w-screen-xl mx-auto px-4">
@@ -11,14 +13,21 @@ const Recommended = () => {
             Recommended Movies
           </h2>
 
-          <span className="text-md text-red-500 cursor-pointer hover:underline font-medium">
+          <span
+            onClick={() => navigate("/movies")}
+            className="text-md text-red-500 cursor-pointer hover:underline"
+          >
             See All
           </span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {movies.map((movie, i) => (
-            <div key={i} className="rounded overflow-hidden cursor-pointer">
+            <div
+              key={i}
+              className="rounded overflow-hidden cursor-pointer"
+              onClick={() => navigate(`/movie/${movie.id}`)}
+            >
 
               <div className="relative">
                 <img
