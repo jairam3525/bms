@@ -15,7 +15,11 @@ export const LocationProvider = ({ children }) => {
                 );
 
                 const data = await res.json();
-                const userLocation = data?.address?.state;
+
+                // take first part of display name (city/area)
+                const userLocation = data?.display_name
+                    ? data.display_name.split(",")[0]
+                    : "Unknown Location";
 
                 setLocation(userLocation);
             } catch (err) {
@@ -43,11 +47,10 @@ export const LocationProvider = ({ children }) => {
     }, []);
 
     return (
-        <LocationContext.Provider value= {{ location, loading, error }
-}>
-    { children }
-    </LocationContext.Provider>
-  );
+        <LocationContext.Provider value={{ location, loading, error }}>
+            {children}
+        </LocationContext.Provider>
+    );
 };
 
 export const useLocation = () => useContext(LocationContext);

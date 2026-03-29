@@ -6,7 +6,7 @@ import { useLocation } from '../../context/LocationContext.jsx';
 import map from '../../assets/pin.gif'
 const Header = () => {
 
-     const { location, loading, error } = useLocation();
+    const { location, loading, error } = useLocation();
 
     return (
         <div className='w-full bg-white text-sm'>
@@ -28,9 +28,15 @@ const Header = () => {
                     {/* right part */}
 
                     <div className="flex items-center space-x-6">
-                        <div className="text-sm font-medium cursor-pointer mt-2">
-                            {location && <p> <img src={map} alt="Loading..." className='h-10 w-10' /></p>}
-                            {location && <p>{location} &nbsp;</p> }
+                        <div className="flex items-center space-x-2 text-sm font-medium cursor-pointer">
+
+                            <img src={map} alt="location" className="h-6 w-6" />
+
+                            {loading && <span>Loading...</span>}
+
+                            {location && <span>{location}</span>}
+
+                            {error && <span>Location unavailable</span>}
 
                         </div>
 
@@ -40,7 +46,7 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-            
+
             {/* Bottom Navbar */}
             <div className="bg-[#f2f2f2] px-4 md:px-8">
                 <div className="max-w-screen-xl mx-auto flex justify-between items-center py-2 text-gray-700">
