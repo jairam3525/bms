@@ -1,54 +1,54 @@
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { allMovies } from "../utils/constants";
-import {useNavigate} from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 
 const MovieDetails = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [movie, setMovie] = useState(null);
 
-    const movie = allMovies.find((m) => m.id === Number(id));
+  useEffect(() => {
+    fetch(`http://localhost:9000/api/movies/${id}`)
+      .then((res) => res.json())
+      .then((data) => setMovie(data));
+  }, [id]);
 
-    if (!movie) {
-        return <h1 className="text-center mt-10">Movie not found</h1>;
-    }
+  if (!movie) return <h1>Loading...</h1>;
 
-    return (
-        <div className="max-w-screen-xl mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row gap-6">
+  return (
+   <div className="w-full h-[400px] bg-black flex items-center justify-center rounded">
+  <img
+    src={movie.posterUrl}
+    alt={movie.title}
+    className="h-full object-contain"
+  />
 
-                <img
-                    src={movie.img}
-                    alt={movie.title}
-                    className="w-full md:w-1/3 rounded"
-                />
+      <h1 className="text-3xl font-bold mt-4">{movie.title}</h1>
 
-                <div>
-                    <h1 className="text-3xl font-bold mb-3">{movie.title}</h1>
+      <p className="mt-2 text-gray-600">
+        {movie.genre.join(" | ")}
+      </p>
 
-                    <p className="text-gray-600 mb-2">
-                        ⭐ {movie.rating} / 10 ({movie.votes} votes)
-                    </p>
+      <p className="mt-2">⭐ {movie.rating}/10</p>
 
-                    <p className="mb-2">{movie.genre}</p>
-                    <p className="mb-2">Language: {movie.languages}</p>
-                    <p className="mb-4">Age: {movie.age}</p>
+      <button
+  className="mt-4 bg-red-500 text-white px-6 py-2 rounded"
+  onClick={() => {
+  const user = JSON.parse(localStorage.getItem("user"));
 
-                    
+  if (!user) {
+    alert("Login required");
+    window.location.href = "/login";
+  } else {
+    window.location.href = `/booking/${movie._id}`;
+  }
+}}
+>
+  Book Tickets
+</button>
 
-                    
-
-                    <button
-                        onClick={() => navigate("/booking")}
-                        className="bg-red-500 text-white px-6 py-2 rounded"
-                    >
-                        Book Tickets
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default MovieDetails;

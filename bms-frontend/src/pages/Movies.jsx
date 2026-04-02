@@ -1,36 +1,53 @@
-import { allMovies } from "../utils/constants";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Movies = () => {
+  const [movies, setMovies] = useState([]);
+  const { search } = useLocation();
   const navigate = useNavigate();
 
+  // 🔍 Get search query
+  const query = new URLSearchParams(search).get("search") || "";
+
+  // 🎬 Fetch movies
+  useEffect(() => {
+    fetch("http://localhost:9000/api/movies")
+      .then((res) => res.json())
+      .then((data) => setMovies(data));
+  }, []);
+
+  // 🔥 Filter movies
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
-    <div className="max-w-screen-xl mx-auto px-4 py-6">
+    <div className="max-w-screen-xl mx-auto p-4">
 
-      <h1 className="text-2xl font-bold mb-6">
-        All Movies
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">Movies</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {allMovies.map((movie) => (
-          <div
-            key={movie.id}
-            className="cursor-pointer"
-            onClick={() => navigate(`/movie/${movie.id}`)}
-          >
-            <img
-              src={movie.img}
-              alt={movie.title}
-              className="w-full h-[300px] object-cover rounded"
-            />
+      {filteredMovies.length === 0 ? (
+        <p>No movies found</p>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-            <h3 className="mt-2 font-semibold">{movie.title}</h3>
-            <p className="text-sm text-gray-500">
-              {movie.genre}
-            </p>
-          </div>
-        ))}
-      </div>
+          {filteredMovies.map((movie) => (
+            <div
+              key={movie._id}
+              className="cursor-pointer"
+              onClick={() => navigate(`/movie/${movie._id}`)}
+            >
+              <img
+                src={movie.posterUrl}
+                alt={movie.title}
+                className="rounded"
+              />
+              <h2 className="font-semibold mt-2">{movie.title}</h2>
+            </div>
+          ))}
+
+        </div>
+      )}
 
     </div>
   );

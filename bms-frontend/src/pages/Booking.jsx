@@ -1,16 +1,26 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Booking = () => {
+  
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+useEffect(() => {
+  if (!user) {
+    alert("Please login first");
+    window.location.href = "/login";
+  }
+}, []);
+  const { id: movieId } = useParams();
+  const navigate = useNavigate();
+
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [bookedSeats, setBookedSeats] = useState([]);
   const [selectedShow, setSelectedShow] = useState({
     label: "Morning",
     time: "09:00 AM",
   });
-
-  const navigate = useNavigate();
-
-  const bookedSeats = ["A1", "A2", "D5", "E6", "G3"];
 
   const sections = [
     {
@@ -39,6 +49,16 @@ const Booking = () => {
 
   const seatsPerRow = 10;
 
+  // ✅ FETCH BOOKED SEATS FROM BACKEND
+  useEffect(() => {
+    fetch(
+      `http://localhost:9000/api/bookings/${movieId}/${selectedShow.time}`
+    )
+      .then((res) => res.json())
+      .then((data) => setBookedSeats(data))
+      .catch((err) => console.error(err));
+  }, [movieId, selectedShow]);
+
   const toggleSeat = (seat, price) => {
     const exists = selectedSeats.find((s) => s.seat === seat);
 
@@ -51,29 +71,22 @@ const Booking = () => {
 
   const total = selectedSeats.reduce((sum, s) => sum + s.price, 0);
 
+  // ✅ SAVE BOOKING TO BACKEND
   const handleConfirm = () => {
-    const booking = {
-      seats: selectedSeats,
+  if (selectedSeats.length === 0) {
+    alert("Select at least one seat");
+    return;
+  }
+
+  navigate("/payment", {
+    state: {
+      movieId,
+      seats: selectedSeats.map((s) => s.seat),
       total,
-      show: selectedShow.time,
-    };
-
-    localStorage.setItem(
-      "bookings",
-      JSON.stringify([
-        ...(JSON.parse(localStorage.getItem("bookings")) || []),
-        booking,
-      ])
-    );
-
-    navigate("/confirmation", {
-      state: {
-        seats: selectedSeats.map((s) => s.seat),
-        total,
-        show: selectedShow.time,
-      },
-    });
-  };
+      showTime: selectedShow.time,
+    },
+  });
+};
 
   return (
     <div className="max-w-screen-md mx-auto px-4 py-8">
@@ -119,9 +132,11 @@ const Booking = () => {
 
               {Array.from({ length: seatsPerRow }, (_, i) => {
                 const seatId = `${row}${i + 1}`;
+
                 const isSelected = selectedSeats.some(
                   (s) => s.seat === seatId
                 );
+
                 const isBooked = bookedSeats.includes(seatId);
 
                 return (

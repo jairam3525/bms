@@ -1,9 +1,18 @@
-import React from "react";
-import { movies } from "../utils/constants";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Recommended = () => {
   const navigate = useNavigate();
+
+  const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:9000/api/movies")
+      .then((res) => res.json())
+      .then((data) => setMovies(data))
+      .catch((err) => console.error(err));
+  }, []);
+
   return (
     <div className="w-full py-6 bg-white">
       <div className="max-w-screen-xl mx-auto px-4">
@@ -22,16 +31,16 @@ const Recommended = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {movies.map((movie, i) => (
+          {movies.map((movie) => (
             <div
-              key={i}
+              key={movie._id}
               className="rounded overflow-hidden cursor-pointer"
-              onClick={() => navigate(`/movie/${movie.id}`)}
+              onClick={() => navigate(`/movie/${movie._id}`)}
             >
 
               <div className="relative">
                 <img
-                  src={movie.img}
+                  src={movie.posterUrl}
                   alt={movie.title}
                   className="w-full h-[300px] object-cover rounded"
                 />
@@ -48,7 +57,7 @@ const Recommended = () => {
                 </h3>
 
                 <p className="text-md text-gray-500">
-                  {movie.genre.replaceAll("/", " | ")}
+                  {movie.genre.join(" | ")}
                 </p>
               </div>
 

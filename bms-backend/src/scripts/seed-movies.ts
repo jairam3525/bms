@@ -1,7 +1,7 @@
 // File: src/modules/movie/movie.seed.ts
 
 import mongoose from "mongoose";
-import { MovieModel } from "../modules/movie/movie.model";
+import Movie from "../models/movie.model";
 import { config } from "../config/config";
 
 const movies = [
@@ -155,8 +155,8 @@ const seedMovies = async () => {
     await mongoose.connect(config.databaseUrl as string);
     console.log("Connected to DB");
 
-    await MovieModel.deleteMany();
-    await MovieModel.insertMany(movies);
+    await Movie.deleteMany();
+    await Movie.insertMany(movies);
 
     console.log("Movies seeded successfully");
     process.exit(0);
